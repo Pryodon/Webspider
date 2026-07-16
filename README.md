@@ -41,17 +41,19 @@ py -3 --version
 - `LICENSE` — CC0 1.0 Universal
 - `README.md` — this file
 
-## Built-in manual
+## Built-in help
 
-The program has no separate man page, so `--help` contains a complete reference
-covering modes, options, sitemap behavior, path boundaries, inputs, outputs,
-TLS settings, and examples:
+Running the program incorrectly displays a short basic-usage guide with the
+default mode, common modes, and a few examples.
+
+For the complete reference, use:
 
 ```bash
 python3 webspider.py --help
 ```
 
-Command-line mistakes also print the complete help before the error message.
+The full help covers every mode and option, sitemap behavior, path boundaries,
+input formats, output files, TLS settings, and additional examples.
 
 ## Quick start
 
