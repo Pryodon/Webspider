@@ -77,6 +77,45 @@ webspider.cmd https://www.example.com/
 
 The default mode is `--video`, matching the original shell script.
 
+
+## Updating Webspider
+
+Update the exact copy of `webspider.py` that you are running:
+
+```bash
+python3 webspider.py --update
+```
+
+Windows:
+
+```powershell
+py -3 webspider.py --update
+```
+
+or:
+
+```powershell
+webspider.cmd --update
+```
+
+The updater downloads the latest `webspider.py` from the official `main` branch
+of `Pryodon/Webspider`. It:
+
+1. validates UTF-8 decoding and the downloaded Python syntax;
+2. verifies expected Webspider project and license markers;
+3. compares the installed and GitHub version numbers;
+4. compares the complete files, so same-version GitHub changes are not missed;
+5. makes a timestamped backup beside the installed script;
+6. atomically replaces the exact script file that was invoked.
+
+This works from any directory, as long as that directory is writable. It uses
+only Python's standard library and does not require `pip`.
+
+If the installed file already exactly matches GitHub, nothing is changed. The
+updater refuses to replace a newer local version with an older GitHub version.
+
+After a successful update, run Webspider again to use the new code.
+
 ## Common examples
 
 Find videos:
