@@ -1,4 +1,4 @@
-# Web Spider — Cross-platform Python 3 edition
+# Webspider — Cross-platform Python 3 edition
 
 `webspider.py` crawls one or more websites, records same-site URLs, filters the
 results by media/file type, and optionally writes text or XML sitemaps.
@@ -40,6 +40,18 @@ py -3 --version
 - `webspider.cmd` — convenient Windows launcher
 - `LICENSE` — CC0 1.0 Universal
 - `README.md` — this file
+
+## Built-in manual
+
+The program has no separate man page, so `--help` contains a complete reference
+covering modes, options, sitemap behavior, path boundaries, inputs, outputs,
+TLS settings, and examples:
+
+```bash
+python3 webspider.py --help
+```
+
+Command-line mistakes also print the complete help before the error message.
 
 ## Quick start
 
@@ -195,6 +207,35 @@ sitemap-index.xml
 
 Use `--sitemap-base-url` when generating multiple files for Google or another
 public search engine. It lets the index contain absolute public URLs.
+
+
+## Crawl path boundary
+
+The spider stays inside each seed's starting directory, matching the original
+shell script's `wget --no-parent` behavior.
+
+For this command:
+
+```bash
+python3 webspider.py https://example.com/xc/
+```
+
+the spider may crawl:
+
+```text
+https://example.com/xc/
+https://example.com/xc/dir/file.mp4
+```
+
+but it will ignore links such as:
+
+```text
+https://example.com/dl/file.mp4
+https://example.com/other/
+```
+
+A seed that names a page is scoped to that page's containing directory. Multiple
+seeds may open multiple separate directory trees.
 
 ## robots.txt
 
