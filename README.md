@@ -16,9 +16,12 @@ General Public License contains its standard warranty disclaimer and limitation
 of liability in sections 15, 16, and 17.
 
 Additional warranty and liability terms under AGPLv3 section 7(a) are provided
-in [ADDITIONAL-DISCLAIMER.md](ADDITIONAL-DISCLAIMER.md). Each user remains
-responsible for reviewing, testing, operating, and using the software lawfully
-and safely.
+in [ADDITIONAL-DISCLAIMER.md](ADDITIONAL-DISCLAIMER.md). Each user is solely 
+responsible for their own acts and omissions, for determining and complying with 
+any laws independently applicable to them, and for evaluating whether and how to 
+operate the software safely in their environment. This statement allocates 
+responsibility and does not limit the permissions granted by the GNU Affero 
+General Public License.
 
 Nothing in the license or additional disclaimer excludes liability that cannot
 lawfully be excluded under applicable law.
