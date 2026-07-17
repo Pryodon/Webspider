@@ -6,14 +6,8 @@ or XML file for your website!
 
 `webspider.py` crawls websites, imports sitemap trees, checks media and files,
 generates verified sitemaps, and retains a permanent SQLite crawl history. You
-may recrawl and resume interupted crawls at a later time picking up where you left
+may recrawl and resume interrupted crawls at a later time picking up where you left
 off.
-
-## No pip packages required
-
-Webspider uses only the Python 3 standard library. It does not require `pip`, a
-virtual environment, `wget`, Bash, or GNU command-line tools. It runs on Linux,
-Windows, and macOS.
 
 ## License, warranty, and liability
 
@@ -25,11 +19,12 @@ Webspider is licensed under the
 SPDX-License-Identifier: `AGPL-3.0-or-later`
 
 Webspider is provided **“AS IS”** and **“WITH ALL FAULTS,”** without warranty
-of any kind. The GNU Affero General Public License contains its standard
-warranty disclaimer and limitation of liability in sections 15, 16, and 17.
+of any kind. The GNU Affero General Public License contains its standard disclaimer of
+warranty and limitation of liability in sections 15 and 16, as interpreted by
+section 17.
 
-Additional warranty and liability terms under AGPLv3 section 7(a) are provided
-in [ADDITIONAL-DISCLAIMER.md](ADDITIONAL-DISCLAIMER.md).
+Additional warranty and liability terms permitted by AGPLv3 section 7(a) are
+provided in [ADDITIONAL-DISCLAIMER.md](ADDITIONAL-DISCLAIMER.md).
 
 Each user is solely responsible for their own acts and omissions, for
 determining and complying with any laws independently applicable to them, and
@@ -39,6 +34,12 @@ permissions granted by the GNU Affero General Public License.
 
 Nothing in the license or additional disclaimer excludes or limits liability
 that cannot lawfully be excluded or limited under applicable law.
+
+## No pip packages required
+
+Webspider uses only the Python 3 standard library. It does not require `pip`, a
+virtual environment, `wget`, Bash, or GNU command-line tools. It runs on Linux,
+Windows, and macOS.
 
 ## Quick start
 
@@ -222,7 +223,6 @@ file. Servers returning no validators are compared using status, redirect,
 Content-Length, and Content-Type; downloaded HTML and sitemap bodies also use
 SHA-256 hashes.
 
-
 ## External links and externally hosted media
 
 Webspider remains restricted to the original seed hosts and saved path scopes
@@ -301,7 +301,6 @@ crawling was enabled.
 The external settings are saved in the persistent SQLite database. Supply them
 when starting a new state. A resume or recrawl reuses the saved values and
 rejects conflicting command-line replacements.
-
 
 ## FTP links
 
@@ -488,22 +487,6 @@ python3 webspider.py --update
 
 The updater validates the official GitHub source, creates a timestamped backup,
 and atomically replaces the exact script file being run.
-
-## License
-
-Copyright (C) 2026 Landon Hendee
-
-Webspider is licensed under the **GNU Affero General Public License version 3
-or later**.
-
-- Complete license: [LICENSE.md](LICENSE.md)
-- Additional warranty and liability terms:
-  [ADDITIONAL-DISCLAIMER.md](ADDITIONAL-DISCLAIMER.md)
-- SPDX identifier: `AGPL-3.0-or-later`
-
-The additional disclaimer supplements AGPLv3 sections 15, 16, and 17 pursuant
-to section 7(a). The controlling legal text is contained in `LICENSE.md` and
-`ADDITIONAL-DISCLAIMER.md`.
 
 ## Successful range checks
 
