@@ -1,7 +1,13 @@
 # Webspider — Cross-platform Python 3 edition
 
+Generate a list of file links you can feed to [wget](https://www.gnu.org/software/wget/) for easy downloading! Mainly 
+used for spidering web folders with lots of files. Can even generate a sitemap.txt 
+or XML file for your website! 
+
 `webspider.py` crawls websites, imports sitemap trees, checks media and files,
-generates verified sitemaps, and retains a permanent SQLite crawl history.
+generates verified sitemaps, and retains a permanent SQLite crawl history. You
+may recrawl and resume interupted crawls at a later time picking up where you left
+off.
 
 ## No pip packages required
 
@@ -9,25 +15,30 @@ Webspider uses only the Python 3 standard library. It does not require `pip`, a
 virtual environment, `wget`, Bash, or GNU command-line tools. It runs on Linux,
 Windows, and macOS.
 
-## Warranty and liability
+## License, warranty, and liability
 
-**Webspider — Cross-platform Python 3 edition** is provided **“AS IS”** and 
-**“WITH ALL FAULTS.”**
+Copyright (C) 2026 Landon Hendee
 
-Webspider — Cross-platform Python 3 edition is licensed under the [GNU Affero 
-General Public License version 3 or later](LICENSE.md) which contains its standard 
+Webspider is licensed under the
+[GNU Affero General Public License version 3 or later](LICENSE.md).
+
+SPDX-License-Identifier: `AGPL-3.0-or-later`
+
+Webspider is provided **“AS IS”** and **“WITH ALL FAULTS,”** without warranty
+of any kind. The GNU Affero General Public License contains its standard
 warranty disclaimer and limitation of liability in sections 15, 16, and 17.
 
 Additional warranty and liability terms under AGPLv3 section 7(a) are provided
-in [ADDITIONAL-DISCLAIMER.md](ADDITIONAL-DISCLAIMER.md). Each user is solely 
-responsible for their own acts and omissions, for determining and complying with 
-any laws independently applicable to them, and for evaluating whether and how to 
-operate the software safely in their environment. This statement allocates 
-responsibility and does not limit the permissions granted by the GNU Affero 
-General Public License.
+in [ADDITIONAL-DISCLAIMER.md](ADDITIONAL-DISCLAIMER.md).
 
-Nothing in the license or additional disclaimer excludes liability that cannot
-lawfully be excluded under applicable law.
+Each user is solely responsible for their own acts and omissions, for
+determining and complying with any laws independently applicable to them, and
+for evaluating whether and how to operate the software safely in their
+environment. This statement allocates responsibility and does not limit the
+permissions granted by the GNU Affero General Public License.
+
+Nothing in the license or additional disclaimer excludes or limits liability
+that cannot lawfully be excluded or limited under applicable law.
 
 ## Quick start
 
