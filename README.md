@@ -1,341 +1,497 @@
 # Webspider — Cross-platform Python 3 edition
 
-`webspider.py` crawls one or more websites, records same-site URLs, filters the
-results by media/file type, and optionally writes text or XML sitemaps.
+`webspider.py` crawls websites, imports sitemap trees, checks media and files,
+generates verified sitemaps, and retains a permanent SQLite crawl history.
 
 ## No pip packages required
 
-The program uses **only the Python 3 standard library**.
+Webspider uses only the Python 3 standard library. It does not require `pip`, a
+virtual environment, `wget`, Bash, or GNU command-line tools. It runs on Linux,
+Windows, and macOS.
 
-You do **not** need:
+## Warranty and liability
 
-- `pip`
-- a virtual environment
-- Bash
-- GNU `sed`, `awk`, or `grep`
+Webspider is provided **“AS IS”** and **“WITH ALL FAULTS.”** The GNU Affero
+General Public License contains its standard warranty disclaimer and limitation
+of liability in sections 15, 16, and 17.
 
-It runs on Linux, Windows, and macOS with a normal Python 3 installation.
+Additional warranty and liability terms under AGPLv3 section 7(a) are provided
+in [ADDITIONAL-DISCLAIMER.md](ADDITIONAL-DISCLAIMER.md). Each user remains
+responsible for reviewing, testing, operating, and using the software lawfully
+and safely.
 
-## LICENSE
-
-Copyright (C) 2026 Landon Hendee
-
-Webspider is licensed under the GNU Affero General Public License version 3
-or later. See [LICENSE.md](LICENSE.md) for the complete license terms.
-
-SPDX-License-Identifier: AGPL-3.0-or-later
-
-Additional warranty and liability terms under AGPLv3 section 7(a)
-are provided in [ADDITIONAL-DISCLAIMER.md](ADDITIONAL-DISCLAIMER.md).
-
-## Requirements
-
-- Python 3.9 or newer is recommended.
-- Python 3.8 should also work.
-
-Check your version:
-
-```text
-python3 --version
-```
-
-On Windows:
-
-```text
-py -3 --version
-```
-
-## Files
-
-- `webspider.py` — main program
-- `webspider.cmd` — convenient Windows launcher
-- `LICENSE` — CC0 1.0 Universal
-- `README.md` — this file
-
-## Built-in help
-
-Running the program incorrectly displays a short basic-usage guide with the
-default mode, common modes, and a few examples.
-
-For the complete reference, use:
-
-```bash
-python3 webspider.py --help
-```
-
-The full help covers every mode and option, sitemap behavior, path boundaries,
-input formats, output files, TLS settings, and additional examples.
+Nothing in the license or additional disclaimer excludes liability that cannot
+lawfully be excluded under applicable law.
 
 ## Quick start
 
 Linux or macOS:
 
 ```bash
-python3 webspider.py https://www.example.com/
+python3 webspider.py --video https://example.com/
 ```
 
 Windows Command Prompt or PowerShell:
 
 ```powershell
-py -3 webspider.py https://www.example.com/
+py -3 webspider.py --video https://example.com/
 ```
 
-Or use the included launcher:
+The optional `webspider.cmd` launcher may also be used on Windows:
 
 ```powershell
-webspider.cmd https://www.example.com/
+webspider.cmd --video https://example.com/
 ```
 
-The default mode is `--video`, matching the original shell script.
-
-
-## Updating Webspider
-
-Update the exact copy of `webspider.py` that you are running:
+The default mode is `--video`, so this also works:
 
 ```bash
-python3 webspider.py --update
+python3 webspider.py https://example.com/
 ```
 
-Windows:
+## Repository files
 
-```powershell
-py -3 webspider.py --update
-```
+- `webspider.py` — main cross-platform crawler
+- `webspider.cmd` — optional Windows launcher
+- `README.md` — usage and feature documentation
+- `LICENSE.md` — GNU Affero General Public License version 3
+- `ADDITIONAL-DISCLAIMER.md` — supplemental warranty and liability terms
 
-or:
+## Inputs, modes, and filtering
 
-```powershell
-webspider.cmd --update
-```
+A seed may be an HTTP, HTTPS, or—when `--follow-ftp` is enabled—FTP URL.
+Multiple seeds may be supplied directly or read from a text file containing one
+seed per nonblank, non-comment line.
 
-The updater downloads the latest `webspider.py` from the official `main` branch
-of `Pryodon/Webspider`. It:
-
-1. validates UTF-8 decoding and the downloaded Python syntax;
-2. verifies expected Webspider project and license markers;
-3. compares the installed and GitHub version numbers;
-4. compares the complete files, so same-version GitHub changes are not missed;
-5. makes a timestamped backup beside the installed script;
-6. atomically replaces the exact script file that was invoked.
-
-This works from any directory, as long as that directory is writable. It uses
-only Python's standard library and does not require `pip`.
-
-If the installed file already exactly matches GitHub, nothing is changed. The
-updater refuses to replace a newer local version with an older GitHub version.
-
-After a successful update, run Webspider again to use the new code.
-
-## Common examples
-
-Find videos:
-
-```bash
-python3 webspider.py --video https://www.example.com/
-```
-
-Find images, crawl two link levels, and wait one second between requests:
-
-```bash
-python3 webspider.py --images --level 2 --delay 1 https://www.example.com/
-```
-
-Find pages and write an XML sitemap:
-
-```bash
-python3 webspider.py --pages --sitemap-xml https://www.example.com/
-```
-
-Crawl everything and split XML sitemaps into files of 10,000 URLs:
-
-```bash
-python3 webspider.py --all --sitemap-xml --sitemap-max-urls 10000 --sitemap-base-url https://www.example.com/ https://www.example.com/
-```
-
-Read seeds from a text file:
-
-```bash
-python3 webspider.py seeds.txt
-```
-
-Each nonblank, non-comment line may contain a URL, hostname, IPv4 address, or
-IPv6 address.
-
-Re-parse a log generated by this Python program or the older wget shell script:
-
-```bash
-python3 webspider.py --parse-only --log log --audio --out audio-urls.txt
-```
-
-## Modes
-
-Exactly one mode may be selected:
+Exactly one output mode may be selected:
 
 - `--video` — video and subtitle extensions
 - `--audio` — audio extensions
 - `--images` — image extensions
-- `--pages` — directories and common web-page extensions
-- `--files` — files other than directories and `.html`/`.htm`
-- `--all` — every discovered same-site URL
+- `--pages` — directories and common page extensions
+- `--files` — non-page files
+- `--all` — every permitted discovered URL
 
-Override the extension set with `--ext`:
+Override a mode’s extension set with `--ext`:
 
 ```bash
-python3 webspider.py --files --ext "pdf|epub|zip" https://www.example.com/
+python3 webspider.py --files --ext "pdf|epub|zip" https://example.com/
 ```
 
-## Important options
+Important general controls include:
 
 ```text
---delay SECONDS
 --level N|inf
+--delay SECONDS
 --timeout SECONDS
 --status-200
---no-robots
---sitemap-txt
---sitemap-xml
---sitemap-output FILE
---sitemap-max-urls N
---sitemap-base-url URL
---parse-only
+--verbose
 --log FILE
 --out FILE
---insecure
---insecure-ip-https
---verbose
+--default-scheme http|https
 ```
 
-Run this for the complete help:
+The complete and authoritative switch reference is always available through:
 
 ```bash
 python3 webspider.py --help
 ```
 
-## Sitemap escaping
+## Persistent crawl state
 
-The sitemap writer performs two different required operations:
+Every crawl uses a persistent SQLite database in the current directory. It is
+retained after successful completion, Ctrl-C, network errors, and later
+recrawls. The database—not the text log—is used to generate the `urls` file.
 
-1. It percent-encodes unsafe URL characters, such as spaces, `#`, brackets,
-   Unicode path characters, and literal invalid percent signs.
-2. It then XML-escapes the resulting URL before placing it inside `<loc>`.
-
-For example:
-
-```text
-https://example.com/a file & notes.html
-```
-
-becomes:
-
-```xml
-<loc>https://example.com/a%20file%20&amp;%20notes.html</loc>
-```
-
-Existing valid percent escapes such as `%20` are preserved rather than becoming
-double-encoded as `%2520`.
-
-XML files are written atomically through a temporary file and parsed again with
-Python's XML parser before the program reports success.
-
-## Large sitemaps
-
-The default is 10,000 URLs per XML sitemap. The protocol maximum is 50,000.
-
-When more than one file is needed, a command such as:
+Choose a name:
 
 ```bash
-python3 webspider.py --all --sitemap-xml --sitemap-base-url https://www.example.com/sitemaps/ https://www.example.com/
+python3 webspider.py --state media.sqlite3 --video https://example.com/media/
 ```
 
-creates:
+Without `--state`, Webspider generates a stable hidden filename such as:
 
 ```text
-sitemap-1.xml
-sitemap-2.xml
-...
-sitemap-index.xml
+.webspider-state-example.com-42db7c18c1.sqlite3
 ```
 
-Use `--sitemap-base-url` when generating multiple files for Google or another
-public search engine. It lets the index contain absolute public URLs.
+SQLite stores seeds, scopes, pending queues, sitemap relationships, HTTP
+statuses, redirects, ETags, Last-Modified values, Content-Length, Content-Type,
+body hashes for downloaded pages/sitemaps, first/last seen times, change runs,
+and completed or interrupted run history. WAL journaling and small transactions
+provide crash-safe progress.
 
+## Logging, verbose progress, and interruption
 
-## Crawl path boundary
+The text log is an incremental human-readable audit trail. SQLite—not the log—is
+the source of truth for current crawl state and normal URL-list generation.
 
-The spider stays inside each seed's starting directory, matching the original
-shell script's `wget --no-parent` behavior.
+With `-v` or `--verbose`, Webspider reports URL checks and sitemap work in real
+time, including sitemap phase starts and ends, queued documents, downloads,
+parse summaries, imported-URL milestones, errors, robots delays, and temporary
+storage cleanup.
 
-For this command:
+Pressing Ctrl-C:
+
+- records the interruption;
+- preserves pending queues and validators in SQLite;
+- writes the currently selected partial URL output;
+- avoids publishing a partially generated XML sitemap;
+- prints the exact `--resume` command; and
+- exits with status 130.
+
+`--parse-only --log FILE` remains available for older Webspider or wget-style
+logs, but persistent SQLite state is preferred for all new crawls.
+
+## Resume an interrupted crawl
 
 ```bash
-python3 webspider.py https://example.com/xc/
+python3 webspider.py --resume media.sqlite3
 ```
 
-the spider may crawl:
+If the previous activity was within 10 minutes, Webspider normally continues
+immediately. If it is older, robots.txt and sitemap roots are conditionally
+refreshed.
+
+```bash
+python3 webspider.py --resume media.sqlite3 --refresh-sitemaps
+python3 webspider.py --resume media.sqlite3 --no-refresh-sitemaps
+python3 webspider.py --resume media.sqlite3 --sitemap-max-age 30m
+```
+
+Conditional sitemap requests use stored `ETag` and `Last-Modified` headers. A
+`304 Not Modified` response avoids downloading or reparsing the sitemap. Changed
+sitemaps are parsed, new child sitemaps and URLs are merged, and completed file
+checks are preserved.
+
+## Repeat a crawl later
+
+Start a new conditional run using the same database:
+
+```bash
+python3 webspider.py --recrawl media.sqlite3
+```
+
+The recrawl default is `--changes-only`, so `urls` contains newly discovered,
+modified, or restored matching files from that run.
+
+```bash
+python3 webspider.py --recrawl media.sqlite3 --changes-only
+python3 webspider.py --recrawl media.sqlite3 --new-only
+python3 webspider.py --recrawl media.sqlite3 --changed-only
+python3 webspider.py --recrawl media.sqlite3 --gone-only
+python3 webspider.py --recrawl media.sqlite3 --all-known
+```
+
+Recheck everything or only older records:
+
+```bash
+python3 webspider.py --recrawl media.sqlite3 --recheck-all
+python3 webspider.py --recrawl media.sqlite3 --recheck-older-than 7d
+```
+
+## Efficient URL validation
+
+HTML pages, robots.txt, and sitemaps use conditional `GET`. Media and other
+non-page files use conditional `HEAD` first. If a server rejects `HEAD` with
+403, 405, or 501, Webspider falls back to conditional `GET` with:
 
 ```text
-https://example.com/xc/
-https://example.com/xc/dir/file.mp4
+Range: bytes=0-0
 ```
 
-but it will ignore links such as:
+This checks whether a file exists or changed without downloading the whole
+file. Servers returning no validators are compared using status, redirect,
+Content-Length, and Content-Type; downloaded HTML and sitemap bodies also use
+SHA-256 hashes.
+
+
+## External links and externally hosted media
+
+Webspider remains restricted to the original seed hosts and saved path scopes
+unless external crawling is explicitly enabled.
+
+To check external media links that are directly listed by pages you are already
+crawling, without following external HTML pages:
+
+```bash
+python3 webspider.py --video --external-media \
+  https://nyx.mynetblog.com/ptv/index_wayback_rewritten.html
+```
+
+`--external-media` applies to matching non-page URLs. In video mode, an
+external `.mp4`, `.mkv`, `.webm`, or other configured video extension is
+validated and can appear in `urls`, while an unrelated external HTML page is
+not crawled solely because of this option.
+
+To permit external HTML crawling, set a depth:
+
+```bash
+python3 webspider.py --video --external-depth 1 \
+  https://example.com/index.html
+```
+
+External depth is counted after leaving the original seed hosts:
+
+- depth 0: original-site behavior only, which is the default;
+- depth 1: direct off-site links from an original page;
+- depth 2: links found on an external page at depth 1;
+- depth 3: one additional off-site link hop, and so on.
+
+The two options can be combined:
+
+```bash
+python3 webspider.py --video --external-media --external-depth 2 \
+  https://example.com/index.html
+```
+
+This follows external HTML pages through depth 2 and also validates matching
+media directly found on every page that was permitted to load.
+
+External file validation uses the same efficient conditional `HEAD` request and
+one-byte conditional `GET` fallback as other non-page files.
+
+Webspider follows robots rules independently for every origin. Before accessing
+an external origin it conditionally fetches that origin's `robots.txt`, saves
+its validators and body in SQLite, and applies the matching user-agent group's:
+
+- `Allow`
+- `Disallow`
+- `Crawl-delay`
+- `Request-rate`
+
+The rules also apply to sitemap downloads and to both requests in the
+`HEAD`-then-one-byte-`GET` fallback. Request timing is tracked separately for
+each origin. The strictest of the command-line `--delay`, `Crawl-delay`, and
+`Request-rate` controls the next request.
+
+For conflicting `Allow` and `Disallow` records, Webspider uses the most
+specific matching path. `Allow` wins only when the matching rules have equal
+specificity. Wildcards and the terminal `$` end anchor are supported.
+
+`--no-robots` disables these rules only for the original saved seed origins.
+External HTTP, HTTPS, and FTP origins always enforce their own robots policy;
+there is no external-site opt-out.
+
+On a resume within the same run, the saved policy is reused. A later recrawl
+conditionally revalidates each encountered origin's `robots.txt` before using
+that origin again.
+
+A same-host URL outside the original path scope remains excluded. For example,
+a seed under `/ptv/` does not gain access to `/private/` merely because external
+crawling was enabled.
+
+The external settings are saved in the persistent SQLite database. Supply them
+when starting a new state. A resume or recrawl reuses the saved values and
+rejects conflicting command-line replacements.
+
+
+## FTP links
+
+FTP crawling is disabled by default. Enable it explicitly:
+
+```bash
+python3 webspider.py --video --follow-ftp \
+  https://example.com/index.html
+```
+
+With `--follow-ftp`, Webspider can:
+
+- recognize `ftp://` links in HTML and sitemap entries;
+- validate matching FTP files with metadata commands such as `MLST`, `SIZE`,
+  and `MDTM` without downloading the complete media body;
+- list a directly linked FTP directory;
+- crawl deeper FTP directories when permitted by `--external-depth`;
+- retain FTP size, modification time, availability, directory-listing hashes,
+  and crawl history in the persistent SQLite database.
+
+A directly linked FTP directory is external depth 1. Its child files can be
+validated with `--follow-ftp`; a nested child directory requires
+`--external-depth 2`, and so forth.
+
+```bash
+python3 webspider.py --video --follow-ftp --external-depth 3 \
+  https://example.com/index.html
+```
+
+Use `--max-ftp-entries N` to limit the number of entries accepted from one
+directory listing. The default is 100,000.
+
+FTP has no standardized robots protocol. As a conservative extension,
+Webspider checks `/robots.txt` at the FTP root and honors matching
+`User-agent`, `Allow`, `Disallow`, `Crawl-delay`, and `Request-rate` directives
+when present. These rules are always enforced for an externally reached FTP
+origin. `--no-robots` can bypass them only when the FTP origin was an original
+seed.
+
+FTP URLs may appear as entries inside an HTTP/HTTPS sitemap and are imported
+when `--follow-ftp` is enabled. Sitemap documents themselves must be fetched
+over HTTP or HTTPS; an FTP URL is not accepted as `--sitemap-source`.
+
+Anonymous FTP is used when no username is present. Credentials embedded in an
+FTP URL are supported, but the complete URL is retained in SQLite and the log.
+
+## Directory-index loop protection
+
+File servers frequently use an automatically generated directory listing
+instead of an index page. Such listings may:
+
+- expose `sitemap-index.xml` and numbered sitemap files;
+- link back to the directory itself;
+- contain sorting links such as `?C=N;O=D` that normalize to the same URL.
+
+Webspider schedules each ordinary URL and each sitemap **at most once per crawl
+run**. Rediscovering the root directory or an already processed sitemap updates
+its database history without returning it to the current run's pending queue.
+This prevents the root → sitemap phase → root loop that can otherwise occur on
+an autoindexed file server.
+
+This does not prevent a later `--recrawl` from checking the same URL or sitemap
+again, because a recrawl uses a new run ID.
+
+## Sitemap behavior
+
+Sitemap discovery is enabled by default. Webspider reads `Sitemap:` entries
+from robots.txt, tries `/sitemap.xml` when none are declared, follows nested
+indexes, supports XML, text, and `.xml.gz`, and extracts standard `<loc>`,
+`video:content_loc`, and `image:loc` URLs.
+
+Use only sitemap-listed matching URLs:
+
+```bash
+python3 webspider.py --sitemap-only --video https://example.com/
+```
+
+Disable sitemap handling:
+
+```bash
+python3 webspider.py --no-sitemaps --video https://example.com/media/
+```
+
+Add an explicit nonstandard sitemap:
+
+```bash
+python3 webspider.py --sitemap-source https://example.com/maps/media.xml https://example.com/media/
+```
+
+Downloaded sitemap files remain temporary and are deleted after parsing. The
+persistent SQLite database remains. Conventional sitemap detection does not
+mistake `make-sitemaps.py.txt` for a sitemap.
+
+Webspider can also generate verified output sitemaps:
+
+```bash
+python3 webspider.py --video --sitemap-txt https://example.com/
+python3 webspider.py --pages --sitemap-xml https://example.com/
+```
+
+Related controls include:
 
 ```text
-https://example.com/dl/file.mp4
-https://example.com/other/
+--sitemap-output FILE
+--sitemap-max-urls N
+--sitemap-base-url URL
 ```
 
-A seed that names a page is scoped to that page's containing directory. Multiple
-seeds may open multiple separate directory trees.
+Generated text and XML sitemaps contain only successfully verified URLs.
+Large XML outputs are split into numbered sitemap files plus a sitemap index.
+URLs are percent-encoded and XML-escaped, and XML output is parsed again before
+Webspider reports success.
 
-## robots.txt
+## Current sitemap membership
 
-The crawler respects `robots.txt` by default.
-
-Use `--no-robots` only on websites you own or have permission to crawl:
+Webspider keeps historical URLs even when a later sitemap removes them. Use:
 
 ```bash
-python3 webspider.py --no-robots https://www.example.com/
+python3 webspider.py --recrawl media.sqlite3 --current-sitemap-only
 ```
 
-## TLS options
+to limit non-page scheduling and output to URLs currently listed by a sitemap
+reachable from the current sitemap roots.
 
-`--insecure` disables certificate checking for every HTTPS request. This is
-dangerous on untrusted networks.
-
-`--insecure-ip-https` disables checking only for HTTPS URLs whose host is a
-literal IPv4 or IPv6 address. Normal hostnames remain verified.
-
-## Differences from the original Bash script
-
-The Python edition:
-
-- does not require Bash or GNU utilities;
-- performs the HTTP crawling itself instead of invoking `wget`;
-- works on Windows;
-- parses HTML with Python's standard-library HTML parser;
-- preserves the original filtering and parse-only concepts;
-- creates correctly percent-encoded and XML-escaped sitemaps;
-- automatically splits large sitemaps;
-- uses atomic output replacement.
-
-Because it is a real HTML crawler rather than a parser around `wget --spider`,
-its log format is simpler. `--parse-only` understands both formats.
-
-## Installation
-
-### Linux or macOS
+## Database output without crawling
 
 ```bash
-chmod +x webspider.py
-mkdir -p ~/bin
-cp webspider.py ~/bin/webspider
+python3 webspider.py --export-state media.sqlite3 --all-known --out videos.txt
+python3 webspider.py --state-info media.sqlite3
 ```
 
-Then ensure `~/bin` is in your `PATH`.
+The old `--parse-only --log` feature remains for pre-database log files, but
+new crawls should use the database.
 
-### Windows
+## State safety
 
-Keep `webspider.py` and `webspider.cmd` in the same directory. Add that directory
-to your user `PATH`, or run `webspider.cmd` from the directory directly.
+A `.lock` file prevents two Webspider processes from using one database. If a
+process crashed and no Webspider process remains, use `--force-unlock`.
+
+Start over while preserving the old database as a timestamped backup:
+
+```bash
+python3 webspider.py --state media.sqlite3 --fresh https://example.com/media/
+```
+
+Delete persistent state only when explicitly requested:
+
+```bash
+python3 webspider.py --delete-state media.sqlite3
+```
+
+## TLS and security controls
+
+Normal HTTPS certificate verification is enabled by default.
+
+`--insecure` disables certificate verification for all HTTPS requests and
+should be used only when the risk is understood.
+
+`--insecure-ip-https` disables verification only for HTTPS URLs whose host is a
+literal IPv4 or IPv6 address; normal hostnames remain verified.
+
+Webspider follows robots rules by default. `--no-robots` applies only to the
+original saved seed origins. Every externally reached HTTP, HTTPS, or FTP origin
+still enforces its own robots policy, including `Allow`, `Disallow`,
+`Crawl-delay`, and `Request-rate`.
+
+FTP credentials embedded in URLs are retained in SQLite and logs. Avoid putting
+sensitive credentials in URLs unless that persistence is acceptable.
+
+## Help
+
+Running Webspider incorrectly prints a short basic guide. The complete built-in
+manual includes all switches, conflicts, sitemap limits, and examples:
+
+```bash
+python3 webspider.py --help
+```
+
+## Updating
+
+```bash
+python3 webspider.py --update
+```
+
+The updater validates the official GitHub source, creates a timestamped backup,
+and atomically replaces the exact script file being run.
+
+## License
+
+Copyright (C) 2026 Landon Hendee
+
+Webspider is licensed under the **GNU Affero General Public License version 3
+or later**.
+
+- Complete license: [LICENSE.md](LICENSE.md)
+- Additional warranty and liability terms:
+  [ADDITIONAL-DISCLAIMER.md](ADDITIONAL-DISCLAIMER.md)
+- SPDX identifier: `AGPL-3.0-or-later`
+
+The additional disclaimer supplements AGPLv3 sections 15, 16, and 17 pursuant
+to section 7(a). The controlling legal text is contained in `LICENSE.md` and
+`ADDITIONAL-DISCLAIMER.md`.
+
+## Successful range checks
+
+A server may answer the one-byte fallback request with HTTP 206 Partial Content.
+Webspider treats any successful 2xx response as an available file for
+`--status-200` filtering and verified sitemap generation. When Content-Range
+contains the full resource size, that total is stored instead of the one-byte
+response length.
