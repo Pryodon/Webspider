@@ -339,9 +339,3 @@ Then ensure `~/bin` is in your `PATH`.
 
 Keep `webspider.py` and `webspider.cmd` in the same directory. Add that directory
 to your user `PATH`, or run `webspider.cmd` from the directory directly.
-
-## License
-
-CC0 1.0 Universal. See `LICENSE`.
-
-SPDX-License-Identifier: `CC0-1.0`
