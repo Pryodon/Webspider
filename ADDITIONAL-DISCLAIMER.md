@@ -1,7 +1,8 @@
 # Additional Disclaimer of Warranty and Liability
 
-This additional disclaimer supplements sections 15, 16, and 17 of the
-GNU Affero General Public License version 3 pursuant to section 7(a).
+This additional disclaimer supplements the disclaimer of warranty and
+limitation of liability in sections 15 and 16 of the GNU Affero General Public
+License version 3, as interpreted by section 17, pursuant to section 7(a).
 
 This software is provided "AS IS" and "WITH ALL FAULTS," without warranty,
 representation, promise, or guarantee of any kind.
@@ -29,8 +30,9 @@ This limitation includes, without limitation, any:
 - service interruption, business interruption, or loss of availability;
 - security breach or unauthorized access;
 - loss of revenue, profits, reputation, or opportunity;
-- legal claim, investigation, prosecution, penalty, fine, sanction, or
-  third-party liability; or
+- claims, investigations, proceedings, penalties, fines, sanctions, or
+  third-party liabilities arising from another person's use, misuse,
+  modification, or operation of the software; or
 - direct, indirect, incidental, special, exemplary, punitive, or consequential
   damages.
 
@@ -39,6 +41,8 @@ their own acts and omissions. No unlawful, unauthorized, negligent, reckless,
 or malicious act performed by a user is authorized, directed, adopted, or
 assumed by the copyright holder merely because the software was involved.
 
+This disclaimer allocates responsibility and limits liability; it does not
+restrict any permission granted by the GNU Affero General Public License.
+
 Nothing in this disclaimer excludes or limits any liability that cannot
 lawfully be excluded or limited under applicable law.
-
