@@ -1,41 +1,15 @@
 # Webspider — Cross-platform Python 3 edition
 
-Generate a list of file links you can feed to [wget](https://www.gnu.org/software/wget/) for easy downloading! Mainly 
-used for spidering web folders with lots of files. Can even generate a sitemap.txt 
-or XML file for your website! 
+Webspider crawls websites and directory indexes, imports sitemap trees, checks
+media and other files, generates verified sitemaps, and retains persistent
+SQLite crawl history. It can resume interrupted work and conditionally recrawl
+sites later.
 
-`webspider.py` crawls websites, imports sitemap trees, checks media and files,
-generates verified sitemaps, and retains a permanent SQLite crawl history. You
-may recrawl and resume interrupted crawls at a later time picking up where you left
-off.
+The ordinary `urls` output can be passed to
+[GNU Wget](https://www.gnu.org/software/wget/) when the discovered files should
+also be downloaded.
 
-## License, warranty, and liability
-
-Copyright (C) 2026 Landon Hendee
-
-Webspider is licensed under the
-[GNU Affero General Public License version 3 or later](LICENSE.md).
-
-SPDX-License-Identifier: `AGPL-3.0-or-later`
-
-Webspider is provided **“AS IS”** and **“WITH ALL FAULTS,”** without warranty
-of any kind. The GNU Affero General Public License contains its standard disclaimer of
-warranty and limitation of liability in sections 15 and 16, as interpreted by
-section 17.
-
-Additional warranty and liability terms permitted by AGPLv3 section 7(a) are
-provided in [ADDITIONAL-DISCLAIMER.md](ADDITIONAL-DISCLAIMER.md).
-
-Each user is solely responsible for their own acts and omissions, for
-determining and complying with any laws independently applicable to them, and
-for evaluating whether and how to operate the software safely in their
-environment. This statement allocates responsibility and does not limit the
-permissions granted by the GNU Affero General Public License.
-
-Nothing in the license or additional disclaimer excludes or limits liability
-that cannot lawfully be excluded or limited under applicable law.
-
-## No pip packages required
+## Requirements
 
 Webspider uses only the Python 3 standard library. It does not require `pip`, a
 virtual environment, `wget`, Bash, or GNU command-line tools. It runs on Linux,
@@ -79,7 +53,19 @@ python3 webspider.py https://example.com/
 
 A seed may be an HTTP, HTTPS, or—when `--follow-ftp` is enabled—FTP URL.
 Multiple seeds may be supplied directly or read from a text file containing one
-seed per nonblank, non-comment line.
+seed per nonblank, non-comment line. An argument naming an existing local file
+is treated as a UTF-8 seed file; other arguments are treated as URLs.
+
+Schemeless seeds use HTTPS by default. Use `--http` or `--https` to select the
+default scheme explicitly:
+
+```bash
+python3 webspider.py --http --video example.com/media/
+```
+
+Each seed establishes a saved path boundary. A directory seed ending in `/`
+uses that directory as its boundary; a page or file seed uses its containing
+directory. Same-host links above or beside that boundary remain out of scope.
 
 Exactly one output mode may be selected:
 
@@ -99,15 +85,29 @@ python3 webspider.py --files --ext "pdf|epub|zip" https://example.com/
 Important general controls include:
 
 ```text
+--http | --https
 --level N|inf
 --delay SECONDS
 --timeout SECONDS
+--max-page-bytes BYTES
 --status-200
 --verbose
 --log FILE
---out FILE
---default-scheme http|https
+--out FILE | --output FILE | -o FILE
+--version
 ```
+
+`--level 0` prevents following HTML links beyond seed work; sitemap-listed
+URLs may still be imported unless sitemap handling is disabled. `--level inf`
+removes the HTML-link depth limit and is the default. `--delay` defaults to 0.5
+seconds between requests, `--timeout` defaults to 30 seconds per request, and
+`--max-page-bytes` defaults to 10,000,000 bytes per downloaded page body.
+
+The default human-readable log is `log`, and the default URL output is `urls`.
+Without `--status-200`, the URL output may include matching URLs that were
+checked but returned HTTP errors such as 404 or 503. Use `--status-200` to keep
+only successful 2xx checks. Verified text and XML sitemaps always use only
+successful URLs.
 
 The complete and authoritative switch reference is always available through:
 
@@ -223,6 +223,12 @@ file. Servers returning no validators are compared using status, redirect,
 Content-Length, and Content-Type; downloaded HTML and sitemap bodies also use
 SHA-256 hashes.
 
+A server may answer the one-byte fallback with HTTP 206 Partial Content.
+Webspider records this method as `GET Range` and treats any successful 2xx
+response as available for `--status-200` filtering and verified sitemap
+generation. When `Content-Range` contains the full resource size, that total is
+stored instead of the one-byte response length.
+
 ## External links and externally hosted media
 
 Webspider remains restricted to the original seed hosts and saved path scopes
@@ -232,8 +238,7 @@ To check external media links that are directly listed by pages you are already
 crawling, without following external HTML pages:
 
 ```bash
-python3 webspider.py --video --external-media \
-  https://nyx.mynetblog.com/ptv/index_wayback_rewritten.html
+python3 webspider.py --video --external-media https://nyx.mynetblog.com/ptv/index_wayback_rewritten.html
 ```
 
 `--external-media` applies to matching non-page URLs. In video mode, an
@@ -244,8 +249,7 @@ not crawled solely because of this option.
 To permit external HTML crawling, set a depth:
 
 ```bash
-python3 webspider.py --video --external-depth 1 \
-  https://example.com/index.html
+python3 webspider.py --video --external-depth 1 https://example.com/index.html
 ```
 
 External depth is counted after leaving the original seed hosts:
@@ -258,8 +262,7 @@ External depth is counted after leaving the original seed hosts:
 The two options can be combined:
 
 ```bash
-python3 webspider.py --video --external-media --external-depth 2 \
-  https://example.com/index.html
+python3 webspider.py --video --external-media --external-depth 2 https://example.com/index.html
 ```
 
 This follows external HTML pages through depth 2 and also validates matching
@@ -307,8 +310,7 @@ rejects conflicting command-line replacements.
 FTP crawling is disabled by default. Enable it explicitly:
 
 ```bash
-python3 webspider.py --video --follow-ftp \
-  https://example.com/index.html
+python3 webspider.py --video --follow-ftp https://example.com/index.html
 ```
 
 With `--follow-ftp`, Webspider can:
@@ -326,8 +328,7 @@ validated with `--follow-ftp`; a nested child directory requires
 `--external-depth 2`, and so forth.
 
 ```bash
-python3 webspider.py --video --follow-ftp --external-depth 3 \
-  https://example.com/index.html
+python3 webspider.py --video --follow-ftp --external-depth 3 https://example.com/index.html
 ```
 
 Use `--max-ftp-entries N` to limit the number of entries accepted from one
@@ -390,7 +391,22 @@ Add an explicit nonstandard sitemap:
 python3 webspider.py --sitemap-source https://example.com/maps/media.xml https://example.com/media/
 ```
 
-Downloaded sitemap files remain temporary and are deleted after parsing. The
+`--sitemap-source` may be repeated. A new crawl may also use explicit sitemap
+sources without separate seed arguments; their HTTP or HTTPS origin roots then
+establish the initial crawl scopes.
+
+Bound sitemap imports when working with an unfamiliar or very large site:
+
+```text
+--max-sitemap-documents N   default: 10000
+--max-sitemap-depth N       default: 20
+--max-sitemap-mib N         default: 64 per downloaded/decompressed document
+--max-sitemap-urls N        default: 0 (unlimited)
+```
+
+Downloaded sitemap files remain temporary and are removed after normal
+completion or a handled Ctrl-C. A hard process termination can leave a
+`.webspider-sitemaps-*` directory for later inspection or manual cleanup. The
 persistent SQLite database remains. Conventional sitemap detection does not
 mistake `make-sitemaps.py.txt` for a sitemap.
 
@@ -410,9 +426,13 @@ Related controls include:
 ```
 
 Generated text and XML sitemaps contain only successfully verified URLs.
-Large XML outputs are split into numbered sitemap files plus a sitemap index.
-URLs are percent-encoded and XML-escaped, and XML output is parsed again before
-Webspider reports success.
+`--sitemap-txt` writes `sitemap.txt` beside the selected `--out` file.
+`--sitemap-output` names the XML output, and `--sitemap-max-urls` controls how
+many URLs may appear in one XML document (default 10,000; allowed range 1 to
+50,000). Large XML outputs are split into numbered sitemap files plus a sitemap
+index. `--sitemap-base-url` supplies the public base URL used for child-file
+locations in that index. URLs are percent-encoded and XML-escaped, and XML
+output is parsed again before Webspider reports success.
 
 ## Current sitemap membership
 
@@ -437,8 +457,22 @@ new crawls should use the database.
 
 ## State safety
 
-A `.lock` file prevents two Webspider processes from using one database. If a
-process crashed and no Webspider process remains, use `--force-unlock`.
+A `.lock` file prevents two Webspider processes from using one database. A
+handled Ctrl-C removes the lock normally. A hard process or system termination
+may leave the lock, SQLite WAL/SHM sidecars, an in-flight queue record, and a
+temporary sitemap directory. SQLite retains committed progress, and the next
+successful state open returns in-flight queue records to pending.
+
+If a process crashed, first confirm that no Webspider process is using the
+database. Only then may the stale lock be removed as part of the requested
+state operation:
+
+```bash
+python3 webspider.py --resume media.sqlite3 --force-unlock
+```
+
+Do not use `--force-unlock` merely because a crawl is taking a long time; two
+writers using one database can corrupt or invalidate the crawl state.
 
 Start over while preserving the old database as a timestamped backup:
 
@@ -446,11 +480,19 @@ Start over while preserving the old database as a timestamped backup:
 python3 webspider.py --state media.sqlite3 --fresh https://example.com/media/
 ```
 
+`--fresh` archives the existing database and its WAL/SHM sidecars beside the
+original path before creating a new state. It cannot be combined with resume,
+recrawl, export, state-info, or deletion operations.
+
 Delete persistent state only when explicitly requested:
 
 ```bash
 python3 webspider.py --delete-state media.sqlite3
 ```
+
+Deletion removes the database and its WAL, SHM, and lock sidecars. It refuses
+to proceed when a lock exists unless `--force-unlock` was also explicitly
+supplied after confirming that no process is active.
 
 ## TLS and security controls
 
@@ -479,6 +521,12 @@ manual includes all switches, conflicts, sitemap limits, and examples:
 python3 webspider.py --help
 ```
 
+Print only the installed Webspider version with:
+
+```bash
+python3 webspider.py --version
+```
+
 ## Updating
 
 ```bash
@@ -486,15 +534,8 @@ python3 webspider.py --update
 ```
 
 The updater validates the official GitHub source, creates a timestamped backup,
-and atomically replaces the exact script file being run.
-
-## Successful range checks
-
-A server may answer the one-byte fallback request with HTTP 206 Partial Content.
-Webspider treats any successful 2xx response as an available file for
-`--status-200` filtering and verified sitemap generation. When Content-Range
-contains the full resource size, that total is stored instead of the one-byte
-response length.
+and atomically replaces the exact script file being run. It does not update the
+README, launcher, license files, or any other repository file.
 
 ## Downloading the `urls` file with GNU Wget
 
@@ -507,7 +548,8 @@ file and download HTTP, HTTPS, and FTP URLs non-interactively.
 Debian, Ubuntu, or Raspberry Pi OS:
 
 ```bash
-sudo apt update && sudo apt install wget
+sudo apt update
+sudo apt install wget
 ```
 
 Fedora or Red Hat-based systems:
@@ -566,11 +608,12 @@ named `wget` cannot be mistaken for GNU Wget:
 wget.exe --version
 ```
 
-People who already use [Chocolatey](https://community.chocolatey.org/) may
-instead install its community Wget package:
+People who already use Chocolatey may instead install its
+[community Wget package](https://community.chocolatey.org/packages/wget),
+which can lag current GNU Wget releases:
 
 ```powershell
-choco install wget -y
+choco install wget
 ```
 
 ### Download the URLs
@@ -608,3 +651,34 @@ videos/movies/file.mp4
 
 The server hostname is omitted, existing files are left untouched, and the
 remote path structure is retained.
+
+When `urls` contains more than one host, `--no-host-directories` can map two
+different remote URLs to the same local path. With `--no-clobber`, the first
+download wins and later collisions are skipped. Omit `--no-host-directories`
+when separate host directories are needed.
+
+## License, warranty, and liability
+
+Copyright (C) 2026 Landon Hendee
+
+Webspider is licensed under the
+[GNU Affero General Public License version 3 or later](LICENSE.md).
+
+SPDX-License-Identifier: `AGPL-3.0-or-later`
+
+Webspider is provided **“AS IS”** and **“WITH ALL FAULTS,”** without warranty
+of any kind. The GNU Affero General Public License contains its standard
+disclaimer of warranty and limitation of liability in sections 15 and 16, as
+interpreted by section 17.
+
+Additional warranty and liability terms permitted by AGPLv3 section 7(a) are
+provided in [ADDITIONAL-DISCLAIMER.md](ADDITIONAL-DISCLAIMER.md).
+
+Each user is solely responsible for their own acts and omissions, for
+determining and complying with any laws independently applicable to them, and
+for evaluating whether and how to operate the software safely in their
+environment. This statement allocates responsibility and does not limit the
+permissions granted by the GNU Affero General Public License.
+
+Nothing in the license or additional disclaimer excludes or limits liability
+that cannot lawfully be excluded or limited under applicable law.
