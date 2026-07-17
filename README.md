@@ -512,3 +512,116 @@ Webspider treats any successful 2xx response as an available file for
 `--status-200` filtering and verified sitemap generation. When Content-Range
 contains the full resource size, that total is stored instead of the one-byte
 response length.
+
+## Downloading the `urls` file with GNU Wget
+
+Webspider discovers and validates URLs, but it does not download the files in
+its `urls` output. [GNU Wget](https://www.gnu.org/software/wget/) can read that
+file and download HTTP, HTTPS, and FTP URLs non-interactively.
+
+### Install Wget
+
+Debian, Ubuntu, or Raspberry Pi OS:
+
+```bash
+sudo apt update && sudo apt install wget
+```
+
+Fedora or Red Hat-based systems:
+
+```bash
+sudo dnf install wget
+```
+
+Arch Linux or an Arch-based distribution:
+
+```bash
+sudo pacman -S wget
+```
+
+macOS with [Homebrew](https://brew.sh/):
+
+```bash
+brew install wget
+```
+
+Windows does not normally include GNU Wget. One current option is
+[MSYS2](https://www.msys2.org/):
+
+1. Install MSYS2 and open its **UCRT64** terminal.
+2. Update MSYS2:
+
+   ```bash
+   pacman -Syu
+   ```
+
+   Close and reopen the UCRT64 terminal if the updater tells you to, then run
+   `pacman -Syu` again.
+
+3. Install GNU Wget:
+
+   ```bash
+   pacman -S mingw-w64-ucrt-x86_64-wget
+   ```
+
+Run Wget from the UCRT64 terminal, or add this directory to the Windows `PATH`:
+
+```text
+C:\msys64\ucrt64\bin
+```
+
+Then verify the installation:
+
+```text
+wget --version
+```
+
+In Windows PowerShell, use `wget.exe` explicitly so that a PowerShell alias
+named `wget` cannot be mistaken for GNU Wget:
+
+```powershell
+wget.exe --version
+```
+
+People who already use [Chocolatey](https://community.chocolatey.org/) may
+instead install its community Wget package:
+
+```powershell
+choco install wget -y
+```
+
+### Download the URLs
+
+Run this command from the directory where the downloaded directory tree should
+be created, with Webspider's `urls` file in that directory:
+
+```bash
+wget --no-host-directories --force-directories --no-clobber --cut-dirs=0 -i urls
+```
+
+On Windows PowerShell, use the executable name explicitly:
+
+```powershell
+wget.exe --no-host-directories --force-directories --no-clobber --cut-dirs=0 -i urls
+```
+
+The options mean:
+
+- `--no-host-directories` — do not create a top-level directory named after
+  each server;
+- `--force-directories` — create and preserve the directories from each URL
+  path;
+- `--no-clobber` — skip a local file that already exists instead of replacing
+  it or creating a numbered duplicate;
+- `--cut-dirs=0` — remove zero directory components, preserving the complete
+  URL path below the server name; and
+- `-i urls` — read one URL per line from the `urls` file.
+
+For example, a URL ending in `/videos/movies/file.mp4` is saved as:
+
+```text
+videos/movies/file.mp4
+```
+
+The server hostname is omitted, existing files are left untouched, and the
+remote path structure is retained.
