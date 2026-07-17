@@ -11,15 +11,22 @@ You do **not** need:
 
 - `pip`
 - a virtual environment
-- `wget`
 - Bash
 - GNU `sed`, `awk`, or `grep`
 
 It runs on Linux, Windows, and macOS with a normal Python 3 installation.
 
-## Warranty Disclaimer
+## LICENSE
 
-This software is provided **“AS IS”**, **without warranty of any kind**, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
+Copyright (C) 2026 Landon Hendee
+
+Webspider is licensed under the GNU Affero General Public License version 3
+or later. See [LICENSE.md](LICENSE.md) for the complete license terms.
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+Additional warranty and liability terms under AGPLv3 section 7(a)
+are provided in [ADDITIONAL-DISCLAIMER.md](ADDITIONAL-DISCLAIMER.md).
 
 ## Requirements
 
