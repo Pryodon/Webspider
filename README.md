@@ -11,9 +11,12 @@ Windows, and macOS.
 
 ## Warranty and liability
 
-Webspider is provided **“AS IS”** and **“WITH ALL FAULTS.”** The GNU Affero
-General Public License contains its standard warranty disclaimer and limitation
-of liability in sections 15, 16, and 17.
+**Webspider — Cross-platform Python 3 edition** is provided **“AS IS”** and 
+**“WITH ALL FAULTS.”**
+
+Webspider — Cross-platform Python 3 edition is licensed under the [GNU Affero 
+General Public License version 3 or later](LICENSE.md) which contains its standard 
+warranty disclaimer and limitation of liability in sections 15, 16, and 17.
 
 Additional warranty and liability terms under AGPLv3 section 7(a) are provided
 in [ADDITIONAL-DISCLAIMER.md](ADDITIONAL-DISCLAIMER.md). Each user is solely 
