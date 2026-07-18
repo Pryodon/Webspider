@@ -15,30 +15,47 @@ Webspider uses only the Python 3 standard library. It does not require `pip`, a
 virtual environment, `wget`, Bash, or GNU command-line tools. It runs on Linux,
 Windows, and macOS.
 
+## Installation
+
+```bash
+# Clone or copy the script into your PATH
+git clone https://github.com/Pryodon/Webspider.git
+cd Webspider
+chmod +x webspider
+# optional: symlink as 'spider'
+ln -s "$PWD/webspider.py" ~/bin/spider
+```
+Put this script in your PATH for ease of use!  
+(e.g. put it in `~/bin` and have `~/bin` in your PATH.)
+
+On Windows make a folder on your computer somewhere for apps and 
+[put that folder in your path](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/).
+Then copy `webspider.py` and `webspider.cmd` into that folder. `webspider.cmd` is a script that launches webspider.
+
 ## Quick start
 
 Linux or macOS:
 
 ```bash
-python3 webspider.py --video https://example.com/
+python3 webspider.py --video https://www.cdn.ay1.net/pub/00-READ-ME.html
 ```
 
 Windows Command Prompt or PowerShell:
 
 ```powershell
-py -3 webspider.py --video https://example.com/
+py -3 webspider.py --video https://www.cdn.ay1.net/pub/00-READ-ME.html
 ```
 
 The optional `webspider.cmd` launcher may also be used on Windows:
 
 ```powershell
-webspider.cmd --video https://example.com/
+webspider.cmd --video https://www.cdn.ay1.net/pub/00-READ-ME.html
 ```
 
 The default mode is `--video`, so this also works:
 
 ```bash
-python3 webspider.py https://example.com/
+python3 webspider.py https://www.cdn.ay1.net/pub/00-READ-ME.html
 ```
 
 ## Repository files
