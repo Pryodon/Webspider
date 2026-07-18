@@ -58,6 +58,8 @@ The default mode is `--video`, so this also works:
 python3 webspider.py https://www.cdn.ay1.net/pub/00-READ-ME.html
 ```
 
+**Try this [Google search](https://www.mynetblog.com/How_to_find_media_files_with_Google_and_VLC_media_player/) to find huge amounts of media files to download**
+
 ## Repository files
 
 - `webspider.py` — main cross-platform crawler
