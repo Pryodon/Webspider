@@ -1,5 +1,7 @@
 # Webspider — Cross-platform Python 3 edition
 
+NOTE: We also have our first generation [Web Spider Linux shell script](https://github.com/Pryodon/Web-Spider-Linux-shell-script). That script is not nearly as good as this python version. However, most of the documentation from the older script applies to this version as well.
+
 Webspider crawls websites and directory indexes, imports sitemap trees, checks
 media and other files, generates verified sitemaps, and retains persistent
 SQLite crawl history. It can resume interrupted work and conditionally recrawl
@@ -257,7 +259,7 @@ To check external media links that are directly listed by pages you are already
 crawling, without following external HTML pages:
 
 ```bash
-python3 webspider.py --video --external-media https://nyx.mynetblog.com/ptv/index_wayback_rewritten.html
+python3 webspider.py --video --external-media http://example.com/
 ```
 
 `--external-media` applies to matching non-page URLs. In video mode, an
